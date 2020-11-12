@@ -1,0 +1,16 @@
+on: [push]
+
+jobs:
+  action-test-job:
+    runs-on: ubuntu-latest
+    name: A job to test sending change events
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Create Change Event
+        uses: ./
+        id: pagerduty-change-events
+        with:
+          integration-key: '86b7c005e3664382ab363816756d93e8'
+      - name: Output results
+        run: echo "The response was ${{ steps.pagerduty-change-events.status }} - ${{ steps.pagerduty-change-events.response }}"
