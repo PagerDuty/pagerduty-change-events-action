@@ -16,8 +16,6 @@ async function sendChangeEvent(changeEvent) {
 }
 
 function handlePushEvent(data, integrationKey, targetBranches) {
-  console.log('Handling push event');
-
   const {
     ref,
     compare: compareHref,
@@ -36,7 +34,7 @@ function handlePushEvent(data, integrationKey, targetBranches) {
   const branch = parts[parts.length - 1];
 
   if (!targetBranches.includes(branch)) {
-    console.log(`Skipping event on branch ${branch}.`);
+    console.log(`Skipping push event on branch ${branch}.`);
     return;
   }
 
@@ -65,11 +63,10 @@ function handlePushEvent(data, integrationKey, targetBranches) {
   sendChangeEvent(changeEvent);
 }
 
-function handlePullRequestMergedEvent(data, integrationKey, targetBranches) {
-  console.log('Handling pull request merged event');
-
+function handlePullRequestEvent(data, integrationKey, targetBranches) {
   const {
     pull_request: {
+      merged,
       title,
       body,
       commits,
@@ -96,8 +93,12 @@ function handlePullRequestMergedEvent(data, integrationKey, targetBranches) {
     }
   } = data;
 
+  if (!merged) {
+    console.log('Skipping event, pull request was not merged');
+  }
+
   if (!targetBranches.includes(baseBranch)) {
-    console.log(`Skipping event on branch ${baseBranch}.`);
+    console.log(`Skipping pull request event on branch ${baseBranch}.`);
     return;
   }
 
@@ -148,8 +149,8 @@ try {
 
   if (github.context.eventName === 'push') {
     handlePushEvent(data, integrationKey, branch);
-  } else if (github.context.eventName === 'pull_request' && github.context.action === 'merged') {
-    handlePullRequestMergedEvent(data, integrationKey, branch);
+  } else if (github.context.eventName === 'pull_request' && github.context.action === 'closed') {
+    handlePullRequestEvent(data, integrationKey, branch);
   } else {
     console.log('No action taken. The event or action are not handled by this Action.');
   }
