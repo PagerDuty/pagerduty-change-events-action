@@ -20,6 +20,8 @@ The message returned from the API call to create the change event.
 
 ## Example usage
 
+```
 uses: actions/pagerduty-change-events-action@v0.1
 with:
   integration-key: 'abcdabcdabcdabcdabcdabcdabcdabcd'
+```
