@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const axios = require('axios')
 
-async function sendChangeEvent(changeEvent) {
+function sendChangeEvent(changeEvent) {
   axios
     .post('https://events.pagerduty.com/v2/change/enqueue', changeEvent)
     .then((response) => {
@@ -61,7 +61,7 @@ try {
       ]
     };
 
-    await sendChangeEvent(changeEvent);
+    sendChangeEvent(changeEvent);
   } else if (github.context.eventName === 'pull_request' && github.context.action === 'merged') {
     const {
       pull_request: {
@@ -125,7 +125,7 @@ try {
       changeEvent['payload']['custom_details']['body'] = body.slice(0, changeEventString.length - 524288);
     }
 
-    await sendChangeEvent(changeEvent);
+    sendChangeEvent(changeEvent);
   } else {
     core.setOutput('response', 'No action taken. The event or action are not handled by this Action.');
   }
