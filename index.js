@@ -66,7 +66,6 @@ function handlePushEvent(data, integrationKey, targetBranches) {
 function handlePullRequestEvent(data, integrationKey, targetBranches) {
   const {
     pull_request: {
-      merged,
       title,
       body,
       commits,
@@ -92,10 +91,6 @@ function handlePullRequestEvent(data, integrationKey, targetBranches) {
       full_name: repoName
     }
   } = data;
-
-  if (!merged) {
-    console.log('Skipping event, pull request was not merged');
-  }
 
   if (!targetBranches.includes(baseBranch)) {
     console.log(`Skipping pull request event on branch ${baseBranch}.`);
@@ -151,7 +146,7 @@ try {
 
   if (github.context.eventName === 'push') {
     handlePushEvent(data, integrationKey, branch);
-  } else if (github.context.eventName === 'pull_request' && github.context.action === 'closed') {
+  } else if (github.context.eventName === 'pull_request' && data.action === 'closed' && data.pull_request.merged) {
     handlePullRequestEvent(data, integrationKey, branch);
   } else {
     console.log('No action taken. The event or action are not handled by this Action.');
