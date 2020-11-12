@@ -1,0 +1,14 @@
+name: 'PagerDuty Change Events'
+description: 'Create a PagerDuty Change Event'
+inputs:
+  integration-key:
+    description: 'The integration key that identifies the service the change was made to.'
+    required: true
+outputs:
+  status:
+    description: The status code returned from the API call to create the change event.
+  response:
+    description: The message returned from the API call to create the change event.
+runs:
+  using: 'node12'
+  main: 'index.js'
