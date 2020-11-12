@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const axios = require('axios')
 
-function sendChangeEvent(changeEvent) {
+async function sendChangeEvent(changeEvent) {
   axios
     .post('https://events.pagerduty.com/v2/change/enqueue', changeEvent)
     .then((response) => {
@@ -23,16 +23,21 @@ try {
   const data = github.context.payload;
 
   if (github.context.eventName === 'push') {
-    const ref = data['ref'].split('/');
+    const {
+      ref,
+      compare: compareHref,
+      repository: {
+        full_name: repoFullName,
+        html_url: repoHref,
+        updated_at: timestamp
+      },
+      sender: {
+        login: senderLogin,
+        html_url: senderHref
+      }
+    } = data;
+
     const branch = ref[ref.length - 1];
-    const compareHref = data['compare'];
-    const repository = data['repository'];
-    const repoFullName = repository['full_name'];
-    const repoHref = repository['html_url'];
-    const timestamp = repository['updated_at'];
-    const sender = data['sender'];
-    const senderLogin = sender['login'];
-    const senderHref = sender['html_url'];
 
     const changeEvent = {
       routing_key: integrationKey,
@@ -56,25 +61,32 @@ try {
       ]
     };
 
-    sendChangeEvent(changeEvent);
+    await sendChangeEvent(changeEvent);
   } else if (github.context.eventName === 'pull_request' && github.context.action === 'merged') {
-    const pullRequest = data['pull_request'];
-    const title = pullRequest['title'];
-    const body = pullRequest['body'];
-    const commits = pullRequest['commits'];
-    const additions = pullRequest['additions'];
-    const deletions = pullRequst['deletions'];
-    const changedFiles = pullRequest['changed_files'];
-    const reviewComments = pullRequest['review_comments'];
-    const mergedAt = pullRequest['merged_at'];
-    const pullRequestUrl = pullRequest['html_url'];
-    const user = pullRequest['user'];
-    const userLogin = user['login'];
-    const userUrl = user['html_url'];
-    const mergedBy = pullRequest['merged_by'];
-    const mergedByLogin = mergedBy['login'];
-    const mergedByUrl = mergedBy['html_url'];
-    const repoName = data['repository']['full_name'];
+    const {
+      pull_request: {
+        title,
+        body,
+        commits,
+        additions,
+        deletions,
+        changed_files: changedFiles,
+        review_comments: reviewComments,
+        merged_at: mergedAt,
+        html_url: pullRequestUrl,
+        user: {
+          login: userLogin,
+          html_url: userUrl
+        },
+        merged_by: {
+          login: mergedByLogin,
+          html_url: mergedByUrl
+        }
+      },
+      repository: {
+        full_name: repoName
+      }
+    } = data;
 
     const changeEvent = {
       routing_key: integrationKey,
@@ -113,7 +125,7 @@ try {
       changeEvent['payload']['custom_details']['body'] = body.slice(0, changeEventString.length - 524288);
     }
 
-    sendChangeEvent(changeEvent);
+    await sendChangeEvent(changeEvent);
   } else {
     core.setOutput('response', 'No action taken. The event or action are not handled by this Action.');
   }
