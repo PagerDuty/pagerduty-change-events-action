@@ -7,14 +7,9 @@ async function sendChangeEvent(changeEvent) {
     const response = await axios.post('https://events.pagerduty.com/v2/change/enqueue', changeEvent);
 
     if (response.status !== 202) {
-      console.log(`Setting failed due to non-202 response ${response.status}`);
+      console.log(`Unexpected response ${response.status} - ${JSON.stringify(response.data)}`);
       core.setFailed(`PagerDuty API returned status code ${response.status}`);
     }
-
-    console.log(`Setting output status to ${response.status}`);
-    core.setOutput('status', response.status);
-    console.log(`Setting output response to ${JSON.stringify(response.data)}`);
-    core.setOutput('response', JSON.stringify(response.data));
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -138,7 +133,7 @@ try {
   } else if (github.context.eventName === 'pull_request' && github.context.action === 'merged') {
     handlePullRequestMergedEvent(data, integrationKey);
   } else {
-    core.setOutput('response', 'No action taken. The event or action are not handled by this Action.');
+    console.log('No action taken. The event or action are not handled by this Action.');
   }
 } catch (error) {
   core.setFailed(error.message)
