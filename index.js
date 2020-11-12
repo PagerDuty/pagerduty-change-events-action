@@ -2,20 +2,19 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const axios = require('axios')
 
-function sendChangeEvent(changeEvent) {
-  axios
-    .post('https://events.pagerduty.com/v2/change/enqueue', changeEvent)
-    .then((response) => {
-      if (response.status !== 202) {
-        core.setFailed(`PagerDuty API returned status code ${response.status}`);
-      }
+async function sendChangeEvent(changeEvent) {
+  try {
+    const response = await axios.post('https://events.pagerduty.com/v2/change/enqueue', changeEvent);
 
-      core.setOutput('status', response.status);
-      core.setOutput('response', JSON.stringify(response.data));
-    })
-    .catch((error) => {
-      core.setFailed(error.message);
-    });
+    if (response.status !== 202) {
+      core.setFailed(`PagerDuty API returned status code ${response.status}`);
+    }
+
+    core.setOutput('status', response.status);
+    core.setOutput('response', JSON.stringify(response.data));
+  } catch (error) {
+    core.setFailed(error.message);
+  }
 }
 
 function handlePushEvent(data, integrationKey) {
@@ -33,7 +32,8 @@ function handlePushEvent(data, integrationKey) {
     }
   } = data;
 
-  const branch = ref.split('/')[ref.length - 1];
+  const parts = ref.split('/');
+  const branch = parts[parts.length - 1];
 
   const changeEvent = {
     routing_key: integrationKey,
