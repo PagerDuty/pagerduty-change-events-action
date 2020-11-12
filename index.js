@@ -5,9 +5,9 @@ const axios = require('axios')
 async function sendChangeEvent(changeEvent) {
   try {
     const response = await axios.post('https://events.pagerduty.com/v2/change/enqueue', changeEvent);
+    console.log(`PagerDuty responded with ${response.status} - ${JSON.stringify(response.data)}`);
 
     if (response.status !== 202) {
-      console.log(`Unexpected response ${response.status} - ${JSON.stringify(response.data)}`);
       core.setFailed(`PagerDuty API returned status code ${response.status}`);
     }
   } catch (error) {
@@ -16,6 +16,8 @@ async function sendChangeEvent(changeEvent) {
 }
 
 function handlePushEvent(data, integrationKey, targetBranches) {
+  console.log('Handling push event');
+
   const {
     ref,
     compare: compareHref,
@@ -64,6 +66,8 @@ function handlePushEvent(data, integrationKey, targetBranches) {
 }
 
 function handlePullRequestMergedEvent(data, integrationKey, targetBranches) {
+  console.log('Handling pull request merged event');
+
   const {
     pull_request: {
       title,
