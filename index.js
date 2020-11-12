@@ -15,7 +15,7 @@ async function sendChangeEvent(changeEvent) {
   }
 }
 
-function handlePushEvent(data, integrationKey, targetBranches) {
+function handlePushEvent(data, integrationKey) {
   const {
     ref,
     compare: compareHref,
@@ -31,11 +31,6 @@ function handlePushEvent(data, integrationKey, targetBranches) {
 
   const parts = ref.split('/');
   const branch = parts[parts.length - 1];
-
-  if (!targetBranches.includes(branch)) {
-    console.log(`Skipping push event on branch ${branch}.`);
-    return;
-  }
 
   const changeEvent = {
     routing_key: integrationKey,
@@ -62,7 +57,7 @@ function handlePushEvent(data, integrationKey, targetBranches) {
   sendChangeEvent(changeEvent);
 }
 
-function handlePullRequestEvent(data, integrationKey, targetBranches) {
+function handlePullRequestEvent(data, integrationKey) {
   const {
     pull_request: {
       title,
@@ -81,20 +76,12 @@ function handlePullRequestEvent(data, integrationKey, targetBranches) {
       merged_by: {
         login: mergedByLogin,
         html_url: mergedByUrl
-      },
-      base: {
-        ref: baseBranch
       }
     },
     repository: {
       full_name: repoName
     }
   } = data;
-
-  if (!targetBranches.includes(baseBranch)) {
-    console.log(`Skipping pull request event on branch ${baseBranch}.`);
-    return;
-  }
 
   const changeEvent = {
     routing_key: integrationKey,
@@ -138,13 +125,12 @@ function handlePullRequestEvent(data, integrationKey, targetBranches) {
 
 try {
   const integrationKey = core.getInput('integration-key');
-  const branch = core.getInput('branch').split(' ');
   const data = github.context.payload;
 
   if (github.context.eventName === 'push') {
-    handlePushEvent(data, integrationKey, branch);
+    handlePushEvent(data, integrationKey);
   } else if (github.context.eventName === 'pull_request' && data.action === 'closed' && data.pull_request.merged) {
-    handlePullRequestEvent(data, integrationKey, branch);
+    handlePullRequestEvent(data, integrationKey);
   } else {
     console.log('No action taken. The event or action are not handled by this Action.');
   }
