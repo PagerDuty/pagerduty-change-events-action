@@ -15,7 +15,7 @@ async function sendChangeEvent(changeEvent) {
   }
 }
 
-function handlePushEvent(data, integrationKey) {
+function handlePushEvent(data, integrationKey, targetBranches) {
   const {
     ref,
     compare: compareHref,
@@ -32,6 +32,11 @@ function handlePushEvent(data, integrationKey) {
 
   const parts = ref.split('/');
   const branch = parts[parts.length - 1];
+
+  if (!targetBranches.includes(branch)) {
+    console.log(`Skipping event on branch ${branch}.`);
+    return;
+  }
 
   const changeEvent = {
     routing_key: integrationKey,
@@ -58,7 +63,7 @@ function handlePushEvent(data, integrationKey) {
   sendChangeEvent(changeEvent);
 }
 
-function handlePullRequestMergedEvent(data, integrationKey) {
+function handlePullRequestMergedEvent(data, integrationKey, targetBranches) {
   const {
     pull_request: {
       title,
@@ -77,12 +82,20 @@ function handlePullRequestMergedEvent(data, integrationKey) {
       merged_by: {
         login: mergedByLogin,
         html_url: mergedByUrl
+      },
+      base: {
+        ref: baseBranch
       }
     },
     repository: {
       full_name: repoName
     }
   } = data;
+
+  if (!targetBranches.includes(baseBranch)) {
+    console.log(`Skipping event on branch ${baseBranch}.`);
+    return;
+  }
 
   const changeEvent = {
     routing_key: integrationKey,
@@ -126,12 +139,13 @@ function handlePullRequestMergedEvent(data, integrationKey) {
 
 try {
   const integrationKey = core.getInput('integration-key');
+  const branch = core.getInput('branch').split(' ');
   const data = github.context.payload;
 
   if (github.context.eventName === 'push') {
-    handlePushEvent(data, integrationKey);
+    handlePushEvent(data, integrationKey, branch);
   } else if (github.context.eventName === 'pull_request' && github.context.action === 'merged') {
-    handlePullRequestMergedEvent(data, integrationKey);
+    handlePullRequestMergedEvent(data, integrationKey, branch);
   } else {
     console.log('No action taken. The event or action are not handled by this Action.');
   }

@@ -1,4 +1,4 @@
-on: [push]
+on: [push, pull_request]
 
 jobs:
   action-test-job:
@@ -12,5 +12,3 @@ jobs:
         id: pagerdutyChangeEvents
         with:
           integration-key: '86b7c005e3664382ab363816756d93e8'
-      - name: Output results
-        run: echo "The response was ${{ steps.pagerdutyChangeEvents.status }} - ${{ steps.pagerdutyChangeEvents.response }}"
