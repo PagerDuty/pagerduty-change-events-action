@@ -21,8 +21,7 @@ function handlePushEvent(data, integrationKey, targetBranches) {
     compare: compareHref,
     repository: {
       full_name: repoFullName,
-      html_url: repoHref,
-      updated_at: timestamp
+      html_url: repoHref
     },
     sender: {
       login: senderLogin,
@@ -43,7 +42,7 @@ function handlePushEvent(data, integrationKey, targetBranches) {
     payload: {
       summary: `${senderLogin} pushed branch ${branch} from ${repoFullName}`.slice(0, 1024),
       source: 'GitHub',
-      timestamp: timestamp,
+      timestamp: (new Date()).toISOString(),
       custom_details: {}
     },
     links: [
@@ -141,8 +140,6 @@ try {
   const integrationKey = core.getInput('integration-key');
   const branch = core.getInput('branch').split(' ');
   const data = github.context.payload;
-
-  console.log(github.context);
 
   if (github.context.eventName === 'push') {
     handlePushEvent(data, integrationKey, branch);

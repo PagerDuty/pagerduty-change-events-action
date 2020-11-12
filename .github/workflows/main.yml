@@ -1,6 +1,12 @@
 on:
+  push:
+    branches:
+      - master
   pull_request:
-    types: [closed]
+    branches:
+      - master
+    types:
+      - closed
 
 jobs:
   action-test-job:
