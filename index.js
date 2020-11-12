@@ -147,6 +147,8 @@ try {
   const branch = core.getInput('branch').split(' ');
   const data = github.context.payload;
 
+  console.log(github.context);
+
   if (github.context.eventName === 'push') {
     handlePushEvent(data, integrationKey, branch);
   } else if (github.context.eventName === 'pull_request' && github.context.action === 'closed') {
