@@ -9,8 +9,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Create Change Event
         uses: ./
-        id: pagerduty-change-events
+        id: pagerdutyChangeEvents
         with:
           integration-key: '86b7c005e3664382ab363816756d93e8'
       - name: Output results
-        run: echo "The response was ${{ steps.pagerduty-change-events.status }} - ${{ steps.pagerduty-change-events.response }}"
+        run: echo "The response was ${{ steps.pagerdutyChangeEvents.status }} - ${{ steps.pagerdutyChangeEvents.response }}"
