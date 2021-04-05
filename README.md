@@ -16,28 +16,30 @@ workflow configuration.
 
 ### `integration-key`
 
-**Required** The integration key that identifies the PagerDuty service the change was made to.
+**Required** The integration key that identifies the PagerDuty service the change was made to, added as a GitHub secret for the repository.
 
 ## Example usage
 
-```
+```yaml
 on:
   push:
     branches:
       - master
+      - main
   pull_request:
     branches:
       - master
+      - main
     types:
       - closed
 
 jobs:
-  action-test-job:
+  send-pagerduty-change-event:
     runs-on: ubuntu-latest
-    name: Deploying the application
+    name: Sending PagerDuty Change Event
     steps:
       - name: Create a change event
-        uses: actions/pagerduty-change-events-action@master
+        uses: PagerDuty/pagerduty-change-events-action@master
         with:
-          integration-key: '<your-integration-key-here>'
+          integration-key: ${{ secrets.PAGERDUTY_CHANGE_INTEGRATION_KEY }}
 ```
