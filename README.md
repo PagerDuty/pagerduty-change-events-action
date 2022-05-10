@@ -18,6 +18,10 @@ workflow configuration.
 
 **Required** The integration key that identifies the PagerDuty service the change was made to, added as a GitHub secret for the repository.
 
+### `custom-event`
+
+Custom event summary. If provided the GitHub event type is ignored and the given summary used. A link to the run is included in the change event.
+
 ## Example usage
 
 ```yaml
@@ -42,4 +46,40 @@ jobs:
         uses: PagerDuty/pagerduty-change-events-action@master
         with:
           integration-key: ${{ secrets.PAGERDUTY_CHANGE_INTEGRATION_KEY }}
+```
+
+### Custom event
+
+Custom events can for instance be used for notifying about the result of a job:
+
+```yaml
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploying the application (dummy)
+    steps:
+      - name: Dummy step
+        run: echo "Dummy deployment"
+
+  notification:
+    runs-on: ubuntu-latest
+    name: Notify PagerDuty
+    needs: [deploy]
+    if: always()
+    steps:
+      # make deploy job status available
+      # see https://github.com/marketplace/actions/workflow-status-action
+      - uses: martialonline/workflow-status@v3
+        id: check
+      - name: Create a change event
+        uses: PagerDuty/pagerduty-change-events-action@master
+        with:
+          integration-key: ${{ secrets.PAGERDUTY_CHANGE_INTEGRATION_KEY }}
+          custom-event: Deployment ${{ steps.check.outputs.status }}
 ```
