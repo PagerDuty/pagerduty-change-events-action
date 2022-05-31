@@ -15,6 +15,26 @@ async function sendChangeEvent(changeEvent) {
   }
 }
 
+function handleCustomEvent(summary, integrationKey) {
+  const changeEvent = {
+    routing_key: integrationKey,
+    payload: {
+      summary: summary,
+      source: 'GitHub',
+      timestamp: (new Date()).toISOString(),
+      custom_details: {}
+    },
+    links: [
+      {
+        href: `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+        text: "View run"
+      }
+    ]
+  };
+
+  sendChangeEvent(changeEvent);
+}
+
 function handlePushEvent(data, integrationKey) {
   const {
     ref,
@@ -125,9 +145,13 @@ function handlePullRequestEvent(data, integrationKey) {
 
 try {
   const integrationKey = core.getInput('integration-key');
+  const customEvent = core.getInput('custom-event');
   const data = github.context.payload;
 
-  if (github.context.eventName === 'push') {
+  if (typeof customEvent === 'string') {
+    // if custom event is described, prefer emitting custom event
+    handleCustomEvent(customEvent, integrationKey);
+  } else if (github.context.eventName === 'push') {
     handlePushEvent(data, integrationKey);
   } else if (github.context.eventName === 'pull_request' && data.action === 'closed' && data.pull_request.merged) {
     handlePullRequestEvent(data, integrationKey);
