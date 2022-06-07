@@ -148,7 +148,7 @@ try {
   const customEvent = core.getInput('custom-event');
   const data = github.context.payload;
 
-  if (typeof customEvent === 'string') {
+  if (typeof customEvent === 'string' && customEvent !== '') {
     // if custom event is described, prefer emitting custom event
     handleCustomEvent(customEvent, integrationKey);
   } else if (github.context.eventName === 'push') {
