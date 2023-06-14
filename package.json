@@ -13,8 +13,8 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0",
-    "axios": "^0.21.0"
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "axios": "^1.4.0"
   }
 }
