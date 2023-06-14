@@ -22,6 +22,14 @@ workflow configuration.
 
 Custom event summary. If provided the GitHub event type is ignored and the given summary used. A link to the run is included in the change event.
 
+### `custom-details`
+
+Additional details about the event and affected system on a push or custom event.
+
+### `custom-link`
+
+Override default links to be shown on the alert and/or corresponding incident for a push or custom event.
+
 ## Example usage
 
 ```yaml
@@ -77,9 +85,23 @@ jobs:
       # see https://github.com/marketplace/actions/workflow-status-action
       - uses: martialonline/workflow-status@v3
         id: check
+        
       - name: Create a change event
         uses: PagerDuty/pagerduty-change-events-action@master
         with:
           integration-key: ${{ secrets.PAGERDUTY_CHANGE_INTEGRATION_KEY }}
           custom-event: Deployment ${{ steps.check.outputs.status }}
+          custom-details: |
+            {
+              "build_state": "passed",
+              "build_number": "220",
+              "run_time": "1236s"
+            }
+          custom-links: |
+            [
+              {
+                "href": "https://dashboard.com/1234",
+                "text": "View Dashboard"
+              }
+            ]
 ```

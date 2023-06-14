@@ -15,18 +15,18 @@ async function sendChangeEvent(changeEvent) {
   }
 }
 
-function handleCustomEvent(summary, integrationKey) {
+function handleCustomEvent(summary, customDetails, customLinks, integrationKey) {
   const changeEvent = {
     routing_key: integrationKey,
     payload: {
       summary: summary,
       source: 'GitHub',
       timestamp: (new Date()).toISOString(),
-      custom_details: {}
+      custom_details: customDetails
     },
-    links: [
+    links: customLinks || [
       {
-        href: `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+        href: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
         text: "View run"
       }
     ]
@@ -35,7 +35,7 @@ function handleCustomEvent(summary, integrationKey) {
   sendChangeEvent(changeEvent);
 }
 
-function handlePushEvent(data, integrationKey) {
+function handlePushEvent(data, customDetails, customLinks, integrationKey) {
   const {
     ref,
     compare: compareHref,
@@ -58,9 +58,9 @@ function handlePushEvent(data, integrationKey) {
       summary: `${senderLogin} pushed branch ${branch} from ${repoFullName}`.slice(0, 1024),
       source: 'GitHub',
       timestamp: (new Date()).toISOString(),
-      custom_details: {}
+      custom_details: customDetails
     },
-    links: [
+    links: customLinks || [
       {
         href: compareHref,
         text: 'View on GitHub'
@@ -148,11 +148,14 @@ try {
   const customEvent = core.getInput('custom-event');
   const data = github.context.payload;
 
+  const customDetails = core.getInput('custom-details') ? JSON.parse(core.getInput('custom-details')) : {};
+  const customLinks = core.getInput('custom-links') ? JSON.parse(core.getInput('custom-links')) : null;
+
   if (typeof customEvent === 'string' && customEvent !== '') {
     // if custom event is described, prefer emitting custom event
-    handleCustomEvent(customEvent, integrationKey);
+    handleCustomEvent(customEvent, customDetails, customLinks, integrationKey);
   } else if (github.context.eventName === 'push') {
-    handlePushEvent(data, integrationKey);
+    handlePushEvent(data, customDetails, customLinks, integrationKey);
   } else if (github.context.eventName === 'pull_request' && data.action === 'closed' && data.pull_request.merged) {
     handlePullRequestEvent(data, integrationKey);
   } else {
