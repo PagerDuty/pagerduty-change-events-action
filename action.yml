@@ -7,6 +7,12 @@ inputs:
   custom-event:
     description: 'Custom event summary. If provided the GitHub event type is ignored and the given summary used. A link to the run is included in the event.'
     required: false
+  custom-details: 
+    description: 'Additional details about the event and affected system on a push or custom event.'
+    required: false
+  custom-links: 
+    description: 'Links to be shown on the alert and/or corresponding incident.'
+    required: false
 runs:
   using: 'node12'
   main: 'index.js'
