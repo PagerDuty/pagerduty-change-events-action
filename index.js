@@ -148,7 +148,7 @@ try {
   const customEvent = core.getInput('custom-event');
   const data = github.context.payload;
 
-  const customDetails = core.getInput('custom-details') ? JSON.parse(core.getInput('custom-details')) || {};
+  const customDetails = core.getInput('custom-details') ? JSON.parse(core.getInput('custom-details')) : {};
   const customLinks = core.getInput('custom-links') ? JSON.parse(core.getInput('custom-links')) : null;
 
   if (typeof customEvent === 'string' && customEvent !== '') {
