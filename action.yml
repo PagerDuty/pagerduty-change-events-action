@@ -11,7 +11,7 @@ inputs:
     description: 'Additional details about the event and affected system on a push or custom event.'
     required: false
   custom-links: 
-    description: 'Links to be shown on the alert and/or corresponding incident.'
+    description: 'Override default links to be shown on the alert and/or corresponding incident for a push or custom event.'
     required: false
 runs:
   using: 'node12'
