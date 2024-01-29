@@ -8,5 +8,5 @@ inputs:
     description: 'Custom event summary. If provided the GitHub event type is ignored and the given summary used. A link to the run is included in the event.'
     required: false
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'index.js'
