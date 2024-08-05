@@ -22,6 +22,7 @@ workflow configuration.
 
 Custom event summary. If provided the GitHub event type is ignored and the given summary used. A link to the run is included in the change event.
 
+
 ## Example usage
 
 ```yaml
