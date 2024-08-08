@@ -33,7 +33,7 @@ jobs:
       # on a pull_request_target.  But we need to be extra careful not to trigger any script
       # that may operate on PR controlled contents like in the case of npm install.
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0

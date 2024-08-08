@@ -4,8 +4,8 @@ on:
   # access to the target repository from public forks.  This should remain as a pull_request
   # trigger because checkout, build, format and checking for changes do not need elevated
   # permissions to the repository.  The reduced permissions for public forks is adequate.
-  # Since this will commit readme/recompile changes back to the branch, special attention 
-  # should be paid to changes made to this workflow when reviewing the PR and granting 
+  # Since this will commit readme/recompile changes back to the branch, special attention
+  # should be paid to changes made to this workflow when reviewing the PR and granting
   # permission to first time contributors to run the workflow.
   pull_request:
   # Don't include any specific paths here so we always get a build that produces a status
@@ -15,10 +15,10 @@ on:
 jobs:
   update-readme:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -29,7 +29,7 @@ jobs:
         with:
           files-with-code: 'action.yml,index.js'
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Get the next version for the readme if there are code changes to the action
         if: steps.action-code.outputs.HAS_CHANGES == 'true'
         id: version
