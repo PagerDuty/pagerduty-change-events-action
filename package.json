@@ -2,19 +2,26 @@
   "name": "pagerduty-change-events-action",
   "version": "1.0.0",
   "description": "GitHub Action for PagerDuty change events",
-  "main": "index.js",
+  "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "bun test"
   },
-  "keywords": [],
+  "files": [
+    "action.yml",
+    "src",
+    "test",
+    "SPEC.md",
+    "README.md"
+  ],
+  "keywords": [
+    "github-actions",
+    "pagerduty",
+    "change-events"
+  ],
   "author": {
     "name": "Adam Vaughan",
     "email": "avaughan@pagerduty.com"
   },
-  "license": "ISC",
-  "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0",
-    "axios": "^0.21.0"
-  }
+  "license": "ISC"
 }

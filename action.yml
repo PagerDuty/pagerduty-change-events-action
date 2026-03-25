@@ -1,12 +1,12 @@
-name: 'PagerDuty Change Events'
-description: 'Create a PagerDuty Change Event'
+name: "PagerDuty Change Events"
+description: "Create a PagerDuty Change Event"
 inputs:
   integration-key:
-    description: 'The integration key that identifies the service the change was made to.'
+    description: "The integration key that identifies the service the change was made to."
     required: true
   custom-event:
-    description: 'Custom event summary. If provided the GitHub event type is ignored and the given summary used. A link to the run is included in the event.'
+    description: "Custom event summary. If provided the GitHub event type is ignored and the given summary used. A link to the run is included in the event."
     required: false
 runs:
-  using: 'node16'
-  main: 'index.js'
+  using: "node24"
+  main: "src/index.js"
