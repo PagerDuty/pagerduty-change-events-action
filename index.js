@@ -156,7 +156,7 @@ try {
   } else if (github.context.eventName === 'pull_request' && data.action === 'closed' && data.pull_request.merged) {
     handlePullRequestEvent(data, integrationKey);
   } else {
-    console.log('No action taken. The event or action are not handled by this Action.');
+    console.log('No action taken. The event or action is not handled by this Action.');
   }
 } catch (error) {
   core.setFailed(error.message)
